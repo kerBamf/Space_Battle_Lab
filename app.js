@@ -46,7 +46,7 @@ class Ship {
             if (attackTest < this.accuracy) {
                 enemy.hull -= this.firepower
                 if (enemy.hull <= 0) {
-                    console.log("She's taken too much damage, Captain! We need to abandon ship!")
+                    console.log(`She's taken too much damage from ${this.name}, Captain! We need to abandon ship!`)
                 } else if (enemy.hull > 0) {
                     console.log(`${this.name} landed a hit on the ${enemy.name}! She has ${enemy.hull} hull points left!`)
                 }
@@ -66,7 +66,7 @@ function createAlienFleet(num) {
 }
 
 
-createAlienFleet(6);
+createAlienFleet(10);
 //console.log(alienFleet[0])
 
 let currentEnemy = alienFleet[0];
@@ -79,13 +79,13 @@ function commenceAssault() {
         if (turn == 0) {
             playerShip.attack(currentEnemy);
             //console.log(currentEnemy.hull);
-            if (currentEnemy.hull <= 0 && alienFleet.indexOf(currentEnemy) < 5) {
+            if (currentEnemy.hull <= 0 && alienFleet.indexOf(currentEnemy) < 9) {
                 currentEnemy = alienFleet[(alienFleet.indexOf(currentEnemy) + 1)]
             }
             turn = 1
         } else {
             currentEnemy.attack(playerShip);
-            console.log(playerShip.hull);
+            //console.log(playerShip.hull);
             turn = 0
         }
     }
