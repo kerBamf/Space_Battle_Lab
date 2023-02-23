@@ -1,4 +1,5 @@
 let playerShipName = 'USS Assembly'
+let beginState = document.querySelector('body').innerHTML;
 
 //Build Player Ship
 let playerShip = {
@@ -59,6 +60,7 @@ class Ship {
 
 //Fleet Creation Builder
 function createAlienFleet(num) {
+    alienFleet = []
     for (let i = 1; i <= num; i++) {
         let vessel = new Ship(`Alien Ship ${i}`);
         alienFleet.push(vessel);
@@ -66,21 +68,29 @@ function createAlienFleet(num) {
 }
 
 
-createAlienFleet(10);
+//createAlienFleet(10);
 //console.log(alienFleet[0])
 
-let currentEnemy = alienFleet[0];
+let currentEnemy = null;
 //console.log(alienFleet.indexOf(currentEnemy))
 
 //Combat Logic
 function commenceAssault() {
+    currentEnemy = alienFleet[0];
     let turn = 0
     while (playerShip.hull > 0 && currentEnemy.hull > 0) {
         if (turn == 0) {
             playerShip.attack(currentEnemy);
             //console.log(currentEnemy.hull);
-            if (currentEnemy.hull <= 0 && alienFleet.indexOf(currentEnemy) < 9) {
-                currentEnemy = alienFleet[(alienFleet.indexOf(currentEnemy) + 1)]
+            if (currentEnemy.hull <= 0) {
+                let proceed = confirm(`Captain, we've destroyed  ${currentEnemy.name} and the Assembly has ${playerShip.hull} hull points left. Shall we continue the operation?`);
+                if (proceed === true) {
+                    currentEnemy = alienFleet[(alienFleet.indexOf(currentEnemy) + 1)]
+                    console.log("Aye captain, continuing the operation!")
+                } else { 
+                    quitGame();
+                    return false
+                }
             }
             turn = 1
         } else {
@@ -91,4 +101,27 @@ function commenceAssault() {
     }
 }
 
-commenceAssault();
+//Start game logic.
+let startButton = document.querySelector('.startButton');
+startButton.addEventListener('click', function() {
+     //console.log('game start')
+     startGame()
+    });
+
+//Removes game start button and introduces new window
+function startGame() {
+    document.querySelector('.startButton').remove;
+    document.querySelector('h3').remove;
+    const battleHeader = document.createElement('h2')
+    battleHeader.innerText = 'The battle for humanity has begun!!!'
+    document.querySelector('Body').appendChild(battleHeader);
+    createAlienFleet(6);
+    commenceAssault();
+}
+
+//Quit Game Logic
+ function quitGame() {
+    alert("Aye captain, there's too many. Full retreat!")
+    document.querySelector('body').innerHTML = beginState
+ }
+// });
