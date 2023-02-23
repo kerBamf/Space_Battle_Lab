@@ -1,8 +1,18 @@
 let playerShipName = 'USS Assembly'
-let beginState = document.querySelector('body').innerHTML;
+let continueState = null;
+let playerShip = null;
+let introHeader = null;
+const body = document.querySelector('body');
+let statusReport = null;
+let deathReport = null;
+let continueButton = null;
+let retreatButton = null;
+let battleHeader = null;
 
 //Build Player Ship
-let playerShip = {
+function buildPlayerShip() {
+    
+    playerShip = {
     name: playerShipName,
     hull: 20,
     firePower: 5,
@@ -24,6 +34,7 @@ let playerShip = {
         }
     }
     };
+}
 
 //Alien Fleet Array
 let alienFleet = [];
@@ -48,6 +59,7 @@ class Ship {
                 enemy.hull -= this.firepower
                 if (enemy.hull <= 0) {
                     console.log(`She's taken too much damage from ${this.name}, Captain! We need to abandon ship!`)
+                    playerDead();
                 } else if (enemy.hull > 0) {
                     console.log(`${this.name} landed a hit on the ${enemy.name}! She has ${enemy.hull} hull points left!`)
                 }
@@ -65,6 +77,7 @@ function createAlienFleet(num) {
         let vessel = new Ship(`Alien Ship ${i}`);
         alienFleet.push(vessel);
     }
+    currentEnemy = alienFleet[0];
 }
 
 
@@ -76,22 +89,18 @@ let currentEnemy = null;
 
 //Combat Logic
 function commenceAssault() {
-    currentEnemy = alienFleet[0];
     let turn = 0
     while (playerShip.hull > 0 && currentEnemy.hull > 0) {
         if (turn == 0) {
             playerShip.attack(currentEnemy);
             //console.log(currentEnemy.hull);
             if (currentEnemy.hull <= 0) {
-                let proceed = confirm(`Captain, we've destroyed  ${currentEnemy.name} and the Assembly has ${playerShip.hull} hull points left. Shall we continue the operation?`);
-                if (proceed === true) {
-                    currentEnemy = alienFleet[(alienFleet.indexOf(currentEnemy) + 1)]
-                    console.log("Aye captain, continuing the operation!")
-                } else { 
-                    quitGame();
-                    return false
-                }
+                    statusReport = document.createElement('h4')
+                    statusReport.innerText = `We've defeated ${currentEnemy.name} and the ${playerShip.name} has ${playerShip.hull} hull points left. Shall we continue the fight?`
+                    statusReport.className = 'statusReport'
+                    body.insertBefore(statusReport, body.children[2])
             }
+            
             turn = 1
         } else {
             currentEnemy.attack(playerShip);
@@ -101,27 +110,85 @@ function commenceAssault() {
     }
 }
 
+
+
+//Removes game start button and introduces new window
+
+
+
+//Creating battle buttons (continue or retreat)
+function makeBattleButtons() {
+        continueButton = document.createElement('button')
+        continueButton.innerText = 'Continue the fight'
+        continueButton.id = 'continue'
+        continueButton.addEventListener('click', function() {
+            console.log('Aye captain, continuing the fight!')
+            statusReport.remove();
+            currentEnemy = alienFleet[(alienFleet.indexOf(currentEnemy) + 1)]
+            commenceAssault();
+        })
+        retreatButton = document.createElement('button')
+        retreatButton.innerText = 'Retreat!'
+        retreatButton.id = "retreat"
+        retreatButton.addEventListener('click', function() {
+            console.log('stop');
+            quitGame();
+        })
+    document.querySelector('body').appendChild(continueButton)
+    document.querySelector('body').appendChild(retreatButton)
+
+}
+
 //Start game logic.
-let startButton = document.querySelector('.startButton');
-startButton.addEventListener('click', function() {
+let startButton= null;
+function createStartButton() {
+    startButton = document.querySelector('.startButton');
+    startButton.addEventListener('click', function() {
      //console.log('game start')
      startGame()
     });
+}
+createStartButton();
 
-//Removes game start button and introduces new window
+let beginState = document.querySelector('body').innerHTML;
+
 function startGame() {
-    document.querySelector('.startButton').remove;
-    document.querySelector('h3').remove;
-    const battleHeader = document.createElement('h2')
+    console.log('Game Start')
+    startButton.remove();
+    introHeader = document.querySelector('h3');
+    introHeader.remove();
+    battleHeader = document.createElement('h2')
     battleHeader.innerText = 'The battle for humanity has begun!!!'
-    document.querySelector('Body').appendChild(battleHeader);
-    createAlienFleet(6);
+    document.querySelector('body').appendChild(battleHeader);
+    buildPlayerShip();
+    createAlienFleet(20);
+    makeBattleButtons();
     commenceAssault();
 }
 
+//Reset Function
+function reset() {
+    body.innerHTML = beginState;
+    createStartButton();
+}
+
 //Quit Game Logic
- function quitGame() {
-    alert("Aye captain, there's too many. Full retreat!")
-    document.querySelector('body').innerHTML = beginState
- }
-// });
+
+function quitGame() {
+    alert("Aye captain, there's too many. Full retreat!");
+    reset();
+}
+
+//Player dead logic
+
+function playerDead() {
+    //console.log(`Player is dead`)
+    continueButton.remove();
+    retreatButton.remove();
+    battleHeader.remove();
+    deathReport = document.createElement('h1')
+    deathReport.innerText = "Humanity has perished. We're all dead."
+    body.appendChild(deathReport);
+    setTimeout(reset, 5000)
+
+}
