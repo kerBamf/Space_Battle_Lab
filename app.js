@@ -8,6 +8,7 @@ let deathReport = null;
 let continueButton = null;
 let retreatButton = null;
 let battleHeader = null;
+let currentEnemy = null;
 
 //Build Player Ship
 function buildPlayerShip() {
@@ -70,7 +71,7 @@ class Ship {
         }
     };
 
-//Fleet Creation Builder
+//Fleet Builder
 function createAlienFleet(num) {
     alienFleet = []
     for (let i = 1; i <= num; i++) {
@@ -81,11 +82,7 @@ function createAlienFleet(num) {
 }
 
 
-//createAlienFleet(10);
-//console.log(alienFleet[0])
 
-let currentEnemy = null;
-//console.log(alienFleet.indexOf(currentEnemy))
 
 //Combat Logic
 function commenceAssault() {
@@ -96,7 +93,7 @@ function commenceAssault() {
             //console.log(currentEnemy.hull);
             if (currentEnemy.hull <= 0) {
                     statusReport = document.createElement('h4')
-                    statusReport.innerText = `We've defeated ${currentEnemy.name} and the ${playerShip.name} has ${playerShip.hull} hull points left. Shall we continue the fight?`
+                    statusReport.innerText = `We've defeated ${currentEnemy.name} and the ${playerShip.name} has ${playerShip.hull} hull points left. Shall we press on?`
                     statusReport.className = 'statusReport'
                     body.insertBefore(statusReport, body.children[2])
             }
@@ -187,7 +184,7 @@ function playerDead() {
     retreatButton.remove();
     battleHeader.remove();
     deathReport = document.createElement('h1')
-    deathReport.innerText = "Humanity has perished. We're all dead."
+    deathReport.innerText = "The USS Assembly has been destroyed with all her crew. Humanity has been left to perish."
     body.appendChild(deathReport);
     setTimeout(reset, 5000)
 
